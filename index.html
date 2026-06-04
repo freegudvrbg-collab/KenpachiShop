@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazin Magas</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #1a0000;
+            --text-color: #ffffff;
+            --accent-color: #b30000;
+            --card-bg: #330000;
+            --button-bg: #e60000;
+            --button-text: #ffffff;
+            --border-color: #660000;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background-color: var(--card-bg);
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .btn-all-games {
+            background-color: var(--accent-color);
+            color: var(--button-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .logo-container {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--accent-color);
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 16px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 12px;
+            border: 2px solid var(--accent-color);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-price {
+            font-size: 14px;
+            color: #ffcccc;
+            margin-bottom: 16px;
+        }
+
+        .btn-select {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <button class="btn-all-games">Все игры</button>
+    <div class="logo-container">
+        <img src="URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ" alt="Кемпачи" class="logo-img">
+    </div>
+</header>
+
+<div class="grid-container" id="products-grid">
+    <!-- Сюда будут добавлены товары -->
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const packages = [
+        { diamonds: 105, price: 90, name: '105 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 326, price: 260, name: '326 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 431, price: 300, name: '431 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 546, price: 470, name: '546 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 1113, price: 950, name: '1113 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 1439, price: 1050, name: '1439 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 1659, price: 1299, name: '1659 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 2398, price: 1800, name: '2398 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 6160, price: 5000, name: '6160 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 12320, price: 8500, name: '12320 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 18480, price: 15050, name: '18480 алмазов', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 'Еженедельный лайт', price: 70, name: 'Еженедельный лайт', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' },
+        { diamonds: 'Месячный ваучер', price: 950, name: 'Месячный ваучер', img: 'URL_ИЗОБРАЖЕНИЯ_ЧИБИ_КЕМПАЧИ' }
+    ];
+
+    const grid = document.getElementById('products-grid');
+
+    packages.forEach(pkg => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        card.innerHTML = `
+            <img src="${pkg.img}" alt="${pkg.name}" class="card-avatar">
+            <div class="card-title">${pkg.name}</div>
+            <div class="card-price">${pkg.price} руб.</div>
+            <button class="btn-select">Выбрать</button>
+        `;
+
+        const button = card.querySelector('.btn-select');
+        button.addEventListener('click', () => {
+            selectPackage(pkg.diamonds, pkg.price);
+        });
+
+        grid.appendChild(card);
+    });
+
+    function selectPackage(diamonds, price) {
+        const data = {
+            action: 'select_package',
+            diamonds: diamonds,
+            price: price
+        };
+        tg.sendData(JSON.stringify(data));
+    }
+</script>
+
+</body>
+</html>
+
